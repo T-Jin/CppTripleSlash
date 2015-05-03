@@ -27,19 +27,25 @@
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
-            IWpfTextView textView = this.AdapterService.GetWpfTextView(textViewAdapter);
-            if (textView == null)
+            try
             {
-                return;
+                IWpfTextView textView = this.AdapterService.GetWpfTextView(textViewAdapter);
+                if (textView == null)
+                {
+                    return;
+                }
+
+                Func<TripleSlashCompletionCommandHandler> createCommandHandler = delegate()
+                {
+                    var dte = ServiceProvider.GetService(typeof(DTE)) as DTE;
+                    return new TripleSlashCompletionCommandHandler(textViewAdapter, textView, this, dte);
+                };
+
+                textView.Properties.GetOrCreateSingletonProperty(createCommandHandler);
             }
-
-            Func<TripleSlashCompletionCommandHandler> createCommandHandler = delegate() 
+            catch
             {
-                var dte = ServiceProvider.GetService(typeof(DTE)) as DTE;
-                return new TripleSlashCompletionCommandHandler(textViewAdapter, textView, this, dte);
-            };
-
-            textView.Properties.GetOrCreateSingletonProperty(createCommandHandler);
+            }
         }
     }
 }

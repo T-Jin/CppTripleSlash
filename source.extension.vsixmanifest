@@ -3,11 +3,11 @@
   <Identifier Id="70dbb5d8-42d5-43f8-af7b-37668d5c9b46">
     <Name>CppTripleSlash - xml doc comments for c++</Name>
     <Author>chakrab</Author>
-    <Version>1.0.0</Version>
+    <Version>1.0.4</Version>
     <Description xml:space="preserve">Generate xml documentaton comment stubs for c++ when three forward slashes are typed</Description>
-    <MoreInfoUrl>https://google.com</MoreInfoUrl>
+    <MoreInfoUrl>https://cpptripleslash.codeplex.com/</MoreInfoUrl>
     <License>MS-PL.txt</License>
-    <GettingStartedGuide>https://google.com</GettingStartedGuide>
+    <GettingStartedGuide>https://cpptripleslash.codeplex.com/documentation</GettingStartedGuide>
     <Icon>cppts.png</Icon>
     <PreviewImage>cppts_preview.png</PreviewImage>
     <Locale>1033</Locale>
