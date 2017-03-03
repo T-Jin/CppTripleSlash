@@ -87,26 +87,13 @@
                             codeElement = fcm.CodeElementFromPoint(ts.ActivePoint, vsCMElement.vsCMElementFunction);
                         }
 
+                        ts.MoveToLineAndOffset(oldLine, oldOffset - 2);
+                        ts.Delete(2);
+
                         if (codeElement != null && codeElement is CodeFunction)
                         {
-                            CodeFunction function = codeElement as CodeFunction;
-                            StringBuilder sb = new StringBuilder("/ <summary>\r\n" + spaces + "/// \r\n" + spaces + "/// </summary>");
-                            foreach (CodeElement child in codeElement.Children)
-                            {
-                                CodeParameter parameter = child as CodeParameter;
-                                if (parameter != null)
-                                {
-                                    sb.AppendFormat("\r\n" + spaces + "/// <param name=\"{0}\"></param>", parameter.Name);
-                                }
-                            }
+                            ts.Insert(createJavaStyleComment(codeElement, spaces));
 
-                            if (function.Type.AsString != "void")
-                            {
-                                sb.AppendFormat("\r\n" + spaces + "/// <returns></returns>");
-                            }
-
-                            ts.MoveToLineAndOffset(oldLine, oldOffset);
-                            ts.Insert(sb.ToString());
                             ts.MoveToLineAndOffset(oldLine, oldOffset);
                             ts.LineDown();
                             ts.EndOfLine();
@@ -114,8 +101,7 @@
                         }
                         else
                         {
-                            ts.MoveToLineAndOffset(oldLine, oldOffset);
-                            ts.Insert("/ <summary>\r\n" + spaces + "/// \r\n" + spaces + "/// </summary>");
+                            ts.Insert("/**\r\n" + spaces + "* \r\n" + spaces + "* \r\n" + spaces + "*/");
                             ts.MoveToLineAndOffset(oldLine, oldOffset);
                             ts.LineDown();
                             ts.EndOfLine();
@@ -261,6 +247,38 @@
             }
 
             return VSConstants.E_FAIL;
+        }
+
+        private String createJavaStyleComment(CodeElement codeElement, string lineOffset)
+        {
+            StringBuilder stringBuilder = new StringBuilder("/** ");
+
+            stringBuilder.AppendFormat("\r\n" + lineOffset + "* ");
+            stringBuilder.AppendFormat("\r\n" + lineOffset + "* ");
+
+            if (codeElement != null && codeElement is CodeFunction)
+            {
+                CodeFunction codeFunction = codeElement as CodeFunction;
+                foreach (CodeElement codeElementChild in codeElement.Children)
+                {
+                    CodeParameter codeParameter = codeElementChild as CodeParameter;
+                    if (codeParameter != null)
+                        stringBuilder.AppendFormat("\r\n" + lineOffset + "* @param {0} ", codeParameter.FullName);
+                }
+
+                stringBuilder.AppendFormat("\r\n" + lineOffset + "* ");
+
+                if (codeFunction.Type.AsString != "void")
+                {
+                    stringBuilder.AppendFormat("\r\n" + lineOffset + "* @return ");
+                    stringBuilder.AppendFormat("\r\n" + lineOffset + "* ");
+                }
+
+                stringBuilder.AppendFormat("\r\n" + lineOffset + "*/");
+
+            }
+
+            return stringBuilder.ToString();
         }
 
         private bool TriggerCompletion()
